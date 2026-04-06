@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+model Familia {
+  id             Int       @id @default(autoincrement())
+  nombre String    
+  codigoAcceso   String    @unique
+  miembros       Miembro[]
+}
+
+model Miembro {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  pin         String   
+  rol         String   // "ADMIN" o "HIJO"
+  xpTotal     Int      @default(0)
+  monedas     Int      @default(0)
+  familiaId   Int
+  familia     Familia  @relation(fields: [familiaId], references: [id])
+  tareas      Tarea[]
+}
+
+model Tarea {
+  id            Int      @id @default(autoincrement())
+  titulo        String
+  xpRecompensa  Int
+  completada    Boolean  @default(false)
+  fechaCreacion DateTime @default(now())
+  miembroId     Int
+  miembro       Miembro  @relation(fields: [miembroId], references: [id])
+}
