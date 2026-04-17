@@ -4,34 +4,153 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
+
+// ─── FAMILIA ────────────────────────────────────────────────
+// Unidad central. Todo cuelga de acá.
 
 model Family {
-  id             Int       @id @default(autoincrement())
-  name String    
-  accessCode   String    @unique
-  members       Member[]
+  id         String   @id @default(cuid())
+  name       String
+  accessCode String   @unique
+  // 'STORY' o 'CLASSIC' — decisión cerrada, pero mejor que Boolean
+  mode       String   @default("STORY")
+  createdAt  DateTime @default(now())
+
+  members  Member[]
+  tasks    Task[]
+  episodes Episode[]
+  rewards  Reward[]
 }
+
+// ─── MIEMBRO ────────────────────────────────────────────────
+// Un admin es también un Member — no hay tabla separada.
+// La diferencia está en el campo `role` y en qué campos tienen valor.
 
 model Member {
-  id          Int      @id @default(autoincrement())
-  name      String
-  pin         String   
-  role         String   // "ADMIN" o "CHILD"
-  xpTotal     Int      @default(0)
-  coins     Int      @default(0)
-  familyId   Int
-  family     Family  @relation(fields: [familyId], references: [id])
-  tasks     Task[]
+  id       String  @id @default(cuid())
+  familyId String
+  family   Family  @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  name     String
+  role     String  // "ADMIN" | "CHILD"
+  avatarKey String? // clave del asset estático en la app
+
+  // Autenticación — solo uno de estos dos grupos va a tener valor
+  // ADMIN: email + passwordHash / CHILD: pinHash
+  email        String? @unique
+  passwordHash String?
+  pinHash      String?
+
+  // Progresión
+  level    Int @default(1)
+  xpTotal  Int @default(0)
+  coins    Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  assignedTasks   Task[]         @relation("AssignedTo")
+  createdTasks    Task[]         @relation("CreatedBy")
+  redeemedRewards Reward[]
+  notifications   Notification[]
+
+  @@index([familyId])
 }
 
+// ─── TAREA ──────────────────────────────────────────────────
+// La tarea pertenece a la familia, se asigna a un miembro.
+// Separar la "definición" de la "instancia" es post-MVP.
+
 model Task {
-  id            Int      @id @default(autoincrement())
-  title        String
-  xpReward  Int
-  complete    Boolean  @default(false)
-  dateCreation DateTime @default(now())
-  memberId     Int
-  member       Member  @relation(fields: [memberId], references: [id])
+  id       String @id @default(cuid())
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  assignedToId String
+  assignedTo   Member @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  createdById String
+  createdBy   Member @relation("CreatedBy", fields: [createdById], references: [id])
+
+  title       String
+  description String?
+  xpReward    Int
+  coinReward  Int     @default(0)
+
+  // "NONE" | "DAILY" | "WEEKLY"
+  recurrence String @default("NONE")
+
+  // "PENDING" | "COMPLETED" | "APPROVED" | "REJECTED"
+  // Con autoaprobación: PENDING → APPROVED directo
+  status String @default("PENDING")
+
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([familyId])
+  @@index([assignedToId])
+}
+
+// ─── EPISODIO ───────────────────────────────────────────────
+// Capítulos de la historia. Se desbloquean cuando la familia
+// acumula suficiente XP colectivo.
+
+model Episode {
+  id       String @id @default(cuid())
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  orderNumber      Int
+  title            String
+  illustrationUrl  String?
+  xpRequired       Int
+  unlockedAt       DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([familyId, orderNumber])
+  @@index([familyId])
+}
+
+// ─── RECOMPENSA ─────────────────────────────────────────────
+// Una entrada = un canje. No hay catálogo separado en MVP.
+// Si el admin define 3 recompensas posibles, son 3 filas con redeemedBy null.
+
+model Reward {
+  id       String @id @default(cuid())
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  title     String
+  coinCost  Int
+  // "AVAILABLE" | "REDEEMED"
+  status    String   @default("AVAILABLE")
+
+  redeemedById String?
+  redeemedBy   Member?  @relation(fields: [redeemedById], references: [id])
+  redeemedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([familyId])
+}
+
+// ─── NOTIFICACIÓN ───────────────────────────────────────────
+// FCM guarda el token en el cliente. Acá guardás el registro
+// de la notificación para poder marcarla como leída.
+
+model Notification {
+  id       String @id @default(cuid())
+  memberId String
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  type    String  // "TASK_ASSIGNED" | "TASK_COMPLETED" | "EPISODE_UNLOCKED"
+  payload String  // JSON serializado con los datos relevantes
+  read    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([memberId])
 }
