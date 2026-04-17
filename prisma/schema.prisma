@@ -7,31 +7,31 @@ datasource db {
   
 }
 
-model Familia {
+model Family {
   id             Int       @id @default(autoincrement())
-  nombre String    
-  codigoAcceso   String    @unique
-  miembros       Miembro[]
+  name String    
+  accessCode   String    @unique
+  members       Member[]
 }
 
-model Miembro {
+model Member {
   id          Int      @id @default(autoincrement())
-  nombre      String
+  name      String
   pin         String   
-  rol         String   // "ADMIN" o "HIJO"
+  role         String   // "ADMIN" o "CHILD"
   xpTotal     Int      @default(0)
-  monedas     Int      @default(0)
-  familiaId   Int
-  familia     Familia  @relation(fields: [familiaId], references: [id])
-  tareas      Tarea[]
+  coins     Int      @default(0)
+  familyId   Int
+  family     Family  @relation(fields: [familyId], references: [id])
+  tasks     Task[]
 }
 
-model Tarea {
+model Task {
   id            Int      @id @default(autoincrement())
-  titulo        String
-  xpRecompensa  Int
-  completada    Boolean  @default(false)
-  fechaCreacion DateTime @default(now())
-  miembroId     Int
-  miembro       Miembro  @relation(fields: [miembroId], references: [id])
+  title        String
+  xpReward  Int
+  complete    Boolean  @default(false)
+  dateCreation DateTime @default(now())
+  memberId     Int
+  member       Member  @relation(fields: [memberId], references: [id])
 }
