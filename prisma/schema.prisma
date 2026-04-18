@@ -13,6 +13,7 @@ model Family {
   id         String   @id @default(cuid())
   name       String
   accessCode String   @unique
+  collectiveXp Int @default(0)
   // 'STORY' o 'CLASSIC' — decisión cerrada, pero mejor que Boolean
   mode       String   @default("STORY")
   createdAt  DateTime @default(now())
@@ -77,6 +78,7 @@ model Task {
   description String?
   xpReward    Int
   coinReward  Int     @default(0)
+  difficulty String @default("EASY") // "EASY" | "MEDIUM" | "HARD"
 
   // "NONE" | "DAILY" | "WEEKLY"
   recurrence String @default("NONE")
@@ -107,6 +109,8 @@ model Episode {
   illustrationUrl  String?
   xpRequired       Int
   unlockedAt       DateTime?
+  content String
+  rewardTitle String?
 
   createdAt DateTime @default(now())
 
