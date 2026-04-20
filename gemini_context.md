@@ -12,9 +12,9 @@ El "Core Loop" (Bucle de Juego):
 
 Arquitectura Técnica:
 
-- Backend: Node + Express con Screaming Architecture (organizado por Features: auth, tasks, story, shop).
+- Backend: Supabase + Node + Express con Screaming Architecture (organizado por Features: auth, tasks, story, shop).
 - Base de Datos: PostgreSQL gestionado por Prisma ORM.
-- Frontend: Expo (React Native) con animaciones de alto rendimiento.
+- Frontend: Expo (React Native) con animaciones de alto rendimiento Lottie.
 - Seguridad: Autenticación dual (Email/Pass para Admins, PIN para Niños) vía JWT.
 
 ---

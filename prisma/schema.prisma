@@ -14,8 +14,6 @@ model Family {
   name       String
   accessCode String   @unique
   collectiveXp Int @default(0)
-  // 'STORY' o 'CLASSIC' — decisión cerrada, pero mejor que Boolean
-  mode       String   @default("STORY")
   createdAt  DateTime @default(now())
 
   members  Member[]
