@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./client"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
 
 // ─── FAMILIA ────────────────────────────────────────────────
 // Unidad central. Todo cuelga de acá.

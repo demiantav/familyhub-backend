@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import { env } from './core/config/env.js';
+import authRouter from './features/auth/auth.routes.js';
 
 const app = express();
 
 // Middlewares base
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRouter);
 
 // Ruta de salud para verificar que el servidor está vivo
 app.get('/health', (req, res) => {
