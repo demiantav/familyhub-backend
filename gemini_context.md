@@ -31,11 +31,13 @@ Sprint 1: Auth & Families (IN PROGRESS)
 ✅ Environment: Variables secured with Zod.
 ✅ Database: Prisma 7 configured with @prisma/adapter-pg and custom client output.
 ✅ Feature Auth:
-  - logic: registerAdmin implemented (Transaction: Family + Member ADMIN).
-  - validation: Zod schemas (AdminRegisterSchema).
-  - routing: POST /api/auth/register verified.
+  - logic: registerAdmin (Transaction: Family + Member ADMIN).
+  - logic: loginAdmin (Email + Pass + JWT).
+  - validation: Zod schemas (AdminRegister, AdminLogin).
+  - routing: POST /api/auth/register, POST /api/auth/login verified.
 
 Next Steps:
-- Implement Login Admin (Email/Password).
-- Implement Login Member (accessCode + Name + PIN).
+- Implement getFamilyMembers (Public endpoint by accessCode).
+- Implement addFamilyMember (Admin creates child profile with PIN).
+- Implement loginMember (Name + PIN login for children).
 - Create Auth Middleware (shared/middlewares).

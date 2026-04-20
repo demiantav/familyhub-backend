@@ -2,7 +2,7 @@ import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../shared/prisma.js';
 import { env } from '../../core/config/env.js';
-import { AdminRegisterInput } from './auth.schema.js';
+import { AdminRegisterInput, AdminLoginInput } from './auth.schema.js';
 
 // Helper para el código de familia (6 chars alfanuméricos)
 const generateAccessCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -42,5 +42,23 @@ export const authService = {
 
       return { admin: { id: admin.id, name: admin.name, email: admin.email }, family, token };
     });
+  },
+
+  async loginAdmin(data: AdminLoginInput) {
+    // 1. Verificar si el email existe
+    const admin = await prisma.member.findUnique({ where: { email: data.email } });
+    if (!admin || !admin.passwordHash) throw new Error('Invalid credentials');
+
+    const isPasswordValid = await argon2.verify(admin.passwordHash, data.password);
+    if (!isPasswordValid) throw new Error('Invalid credentials');
+
+    // 2. Generar Token
+    const token = jwt.sign(
+      { memberId: admin.id, familyId: admin.familyId, role: admin.role },
+      env.JWT_SECRET,
+      { expiresIn: '7d' },
+    );
+
+    return { admin: { id: admin.id, name: admin.name, email: admin.email }, token };
   },
 };
