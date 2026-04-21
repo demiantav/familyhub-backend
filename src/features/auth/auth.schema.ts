@@ -21,8 +21,18 @@ const MemberLoginSchema = z.object({
     .regex(/^\d+$/, 'PIN must contain only numbers'),
 });
 
+const MemberRegisterSchema = z.object({
+  avatarKey: z.string().min(1, 'Avatar key is required'),
+  name: z.string().min(2, 'Name is required'),
+  pin: z
+    .string()
+    .length(4, 'PIN must be exactly 4 digits')
+    .regex(/^\d+$/, 'PIN must contain only numbers'),
+});
+
 export type AdminRegisterInput = z.infer<typeof AdminRegisterSchema>;
 export type AdminLoginInput = z.infer<typeof AdminLoginSchema>;
 export type MemberLoginInput = z.infer<typeof MemberLoginSchema>;
+export type MemberRegisterInput = z.infer<typeof MemberRegisterSchema>;
 
-export { AdminRegisterSchema, AdminLoginSchema, MemberLoginSchema };
+export { AdminRegisterSchema, AdminLoginSchema, MemberLoginSchema, MemberRegisterSchema };

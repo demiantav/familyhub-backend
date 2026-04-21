@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { registerAdmin, loginAdmin } from './auth.controller.js';
+import { authMiddleware } from '../../shared/middlewares/auth.js';
+import { registerAdmin, loginAdmin, registerMember } from './auth.controller.js';
 
 const authRouter: Router = Router();
 
 authRouter.post('/register', registerAdmin);
 authRouter.post('/login', loginAdmin);
+authRouter.post('/member/register', authMiddleware, registerMember);
 
 export default authRouter;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AdminRegisterSchema, AdminLoginSchema } from './auth.schema.js';
+import { AdminRegisterSchema, AdminLoginSchema, MemberRegisterSchema } from './auth.schema.js';
 import { authService } from './auth.service.js';
 
 export const registerAdmin = async (req: Request, res: Response) => {
@@ -17,6 +17,17 @@ export const loginAdmin = async (req: Request, res: Response) => {
     const validateData = AdminLoginSchema.parse(req.body);
     const result = await authService.loginAdmin(validateData);
     res.status(200).json(result);
+  } catch (error: unknown) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+};
+
+export const registerMember = async (req: Request, res: Response) => {
+  try {
+    const { familyId } = req.user!; // Aseguramos que req.user no es undefined
+    const validateData = MemberRegisterSchema.parse(req.body);
+    const result = await authService.registerMember(validateData, familyId);
+    res.status(201).json(result);
   } catch (error: unknown) {
     res.status(400).json({ error: (error as Error).message });
   }

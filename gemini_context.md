@@ -33,11 +33,13 @@ Sprint 1: Auth & Families (IN PROGRESS)
 ✅ Feature Auth:
   - logic: registerAdmin (Transaction: Family + Member ADMIN).
   - logic: loginAdmin (Email + Pass + JWT).
-  - validation: Zod schemas (AdminRegister, AdminLogin).
-  - routing: POST /api/auth/register, POST /api/auth/login verified.
+  - logic: registerMember (Admin adds child with PIN/Avatar).
+  - validation: Zod schemas (AdminRegister, AdminLogin, MemberRegister).
+  - security: authMiddleware (JWT Validation + Request Injection) & Express type extension.
+  - routing: POST /api/auth/member/register verified (201 Created).
 
 Next Steps:
-- Implement getFamilyMembers (Public endpoint by accessCode).
-- Implement addFamilyMember (Admin creates child profile with PIN).
+- Implement getFamilyMembers (Public endpoint by accessCode to show avatars).
 - Implement loginMember (Name + PIN login for children).
-- Create Auth Middleware (shared/middlewares).
+- Create isAdmin Middleware (Strict role-based access for registerMember).
+- Implement Auth Middleware in shared/middlewares.
