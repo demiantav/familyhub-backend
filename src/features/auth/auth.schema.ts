@@ -1,4 +1,3 @@
-import { access } from 'node:fs';
 import { z } from 'zod';
 
 const AdminRegisterSchema = z.object({
@@ -15,7 +14,7 @@ const AdminLoginSchema = z.object({
 
 const MemberLoginSchema = z.object({
   accessCode: z.string().length(6, 'Access code must be exactly 6 characters long'),
-  name: z.string().min(2, 'Name is required'),
+  memberId: z.string().min(2, 'Member ID is required'),
   pin: z
     .string()
     .length(4, 'PIN must be exactly 4 digits')

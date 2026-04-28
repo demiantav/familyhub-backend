@@ -4,6 +4,7 @@ import {
   AdminLoginSchema,
   MemberRegisterSchema,
   GetFamilyMembersSchema,
+  MemberLoginSchema,
 } from './auth.schema.js';
 import { authService } from './auth.service.js';
 
@@ -42,6 +43,16 @@ export const getFamilyMembers = async (req: Request, res: Response) => {
   try {
     const { accessCode } = GetFamilyMembersSchema.parse(req.params);
     const result = await authService.getMembers({ accessCode });
+    res.status(200).json(result);
+  } catch (error: unknown) {
+    res.status(400).json({ error: (error as Error).message });
+  }
+};
+
+export const loginMember = async (req: Request, res: Response) => {
+  try {
+    const validateData = MemberLoginSchema.parse(req.body);
+    const result = await authService.loginMember(validateData);
     res.status(200).json(result);
   } catch (error: unknown) {
     res.status(400).json({ error: (error as Error).message });

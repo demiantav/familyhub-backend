@@ -13,7 +13,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const verified = jwt.verify(token, env.JWT_SECRET);
     req.user = verified as { memberId: string; familyId: string; role: string }; // Aquí inyectamos el payload validado
     next();
-  } catch (err) {
+  } catch (error: unknown) {
     res.status(403).json({ error: 'Invalid token' });
   }
 };

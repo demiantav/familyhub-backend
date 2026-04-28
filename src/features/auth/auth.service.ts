@@ -7,6 +7,7 @@ import {
   AdminLoginInput,
   MemberRegisterInput,
   GetFamilyMembersInput,
+  MemberLoginInput,
 } from './auth.schema.js';
 
 // Helper para el código de familia (6 chars alfanuméricos)
@@ -107,6 +108,28 @@ export const authService = {
 
     if (!family) throw new Error('Family not found');
 
-    return { family: { id: family.id, name: family.name, members: family.members } };
+    return family;
+  },
+
+  async loginMember(data: MemberLoginInput) {
+    const member = await prisma.member.findUnique({
+      where: { id: data.memberId },
+      include: { family: true },
+    });
+
+    if (!member || !data.pin) throw new Error('Invalid credentials');
+    if (member.family.accessCode !== data.accessCode) throw new Error('Invalid access code');
+
+    const isPinValid = await argon2.verify(member.pinHash!, data.pin);
+    if (!isPinValid) throw new Error('Invalid credentials');
+
+    // Generar Token
+    const token = jwt.sign(
+      { memberId: member.id, familyId: member.familyId, role: member.role },
+      env.JWT_SECRET,
+      { expiresIn: '7d' },
+    );
+
+    return { member: { id: member.id, name: member.name, avatarKey: member.avatarKey }, token };
   },
 };

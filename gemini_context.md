@@ -26,20 +26,24 @@ Mode: ONLY STORY MODE. No "Classic Mode".
 Auth: Dual system (Admin: Email/Pass | Member: Name/PIN + accessCode).
 
 🚧 Current Status & Sprint
-Sprint 1: Auth & Families (IN PROGRESS)
+Sprint 1: Auth & Families (✅ COMPLETED)
 ✅ Setup: Node, Tsx, Zod, Prisma 7, Package.json.
-✅ Environment: Variables secured with Zod.
-✅ Database: Prisma 7 configured with @prisma/adapter-pg and custom client output.
+✅ Database: Prisma 7 + PostgreSQL + custom client output.
 ✅ Feature Auth:
-  - logic: registerAdmin (Transaction: Family + Member ADMIN).
-  - logic: loginAdmin (Email + Pass + JWT).
-  - logic: registerMember (Admin adds child with PIN/Avatar).
-  - validation: Zod schemas (AdminRegister, AdminLogin, MemberRegister).
-  - security: authMiddleware (JWT Validation + Request Injection) & Express type extension.
-  - routing: POST /api/auth/member/register verified (201 Created).
+  - registerAdmin & loginAdmin (Email/Pass).
+  - registerMember (Admin adds child with PIN).
+  - getFamilyMembers (Public endpoint by accessCode).
+  - loginMember (PIN login for children/members).
+✅ Security: authMiddleware & isAdminMiddleware implemented and verified.
+
+Sprint 2: Tasks & Gamification Loop (IN PROGRESS)
+Goals:
+- Implement Task Creation (Admin only).
+- Implement Task Listing (Filtered by member/family).
+- Implement Task Completion Logic (XP & Coins rewards).
+- Setup Story Episode Unlock Check.
 
 Next Steps:
-- Implement getFamilyMembers (Public endpoint by accessCode to show avatars).
-- Implement loginMember (Name + PIN login for children).
-- Create isAdmin Middleware (Strict role-based access for registerMember).
-- Implement Auth Middleware in shared/middlewares.
+- Create Task Schema (Zod).
+- Implement createTask in Task Service (Admin restricted).
+- Implement getTasks for members.
