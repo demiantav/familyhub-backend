@@ -17,3 +17,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     res.status(403).json({ error: 'Invalid token' });
   }
 };
+
+export const isAdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user?.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};

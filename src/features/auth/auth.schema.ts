@@ -1,3 +1,4 @@
+import { access } from 'node:fs';
 import { z } from 'zod';
 
 const AdminRegisterSchema = z.object({
@@ -30,9 +31,20 @@ const MemberRegisterSchema = z.object({
     .regex(/^\d+$/, 'PIN must contain only numbers'),
 });
 
+const GetFamilyMembersSchema = z.object({
+  accessCode: z.string().length(6, 'Access code must be exactly 6 characters long'),
+});
+
 export type AdminRegisterInput = z.infer<typeof AdminRegisterSchema>;
 export type AdminLoginInput = z.infer<typeof AdminLoginSchema>;
 export type MemberLoginInput = z.infer<typeof MemberLoginSchema>;
 export type MemberRegisterInput = z.infer<typeof MemberRegisterSchema>;
+export type GetFamilyMembersInput = z.infer<typeof GetFamilyMembersSchema>;
 
-export { AdminRegisterSchema, AdminLoginSchema, MemberLoginSchema, MemberRegisterSchema };
+export {
+  AdminRegisterSchema,
+  AdminLoginSchema,
+  MemberLoginSchema,
+  MemberRegisterSchema,
+  GetFamilyMembersSchema,
+};

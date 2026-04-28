@@ -2,7 +2,12 @@ import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../shared/prisma.js';
 import { env } from '../../core/config/env.js';
-import { AdminRegisterInput, AdminLoginInput, MemberRegisterInput } from './auth.schema.js';
+import {
+  AdminRegisterInput,
+  AdminLoginInput,
+  MemberRegisterInput,
+  GetFamilyMembersInput,
+} from './auth.schema.js';
 
 // Helper para el código de familia (6 chars alfanuméricos)
 const generateAccessCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -88,5 +93,20 @@ export const authService = {
     });
 
     return { member: { id: member.id, name: member.name, avatarKey: member.avatarKey } };
+  },
+
+  async getMembers(data: GetFamilyMembersInput) {
+    const family = await prisma.family.findUnique({
+      where: { accessCode: data.accessCode },
+      select: {
+        id: true,
+        name: true,
+        members: { select: { id: true, name: true, avatarKey: true, role: true } },
+      },
+    });
+
+    if (!family) throw new Error('Family not found');
+
+    return { family: { id: family.id, name: family.name, members: family.members } };
   },
 };
