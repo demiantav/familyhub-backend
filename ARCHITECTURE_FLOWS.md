@@ -7,6 +7,7 @@ Este documento detalla el flujo de datos y la jerarquía de permisos de la aplic
 ## 🔐 1. Authentication & Family Setup
 
 ### 1.1 Admin Registration (The "Big Bang")
+
 Cuando un padre/madre crea la cuenta inicial.
 
 ```mermaid
@@ -22,14 +23,17 @@ graph TD
 ```
 
 ### 1.2 Member Discovery & Login (The Child's Path)
+
 Los niños no usan email; usan el código de la casa y su PIN.
 
 **Fase A: Descubrimiento (Pública)**
+
 1. **Endpoint:** `GET /api/auth/family/:accessCode`
 2. **Acción:** El sistema busca la familia y devuelve `[{ id, name, avatarKey }]`.
 3. **UX:** El niño busca su avatar en la lista y lo selecciona.
 
 **Fase B: Autenticación**
+
 1. **Endpoint:** `POST /api/auth/login/member`
 2. **Body:** `{ accessCode, name, pin }`
 3. **Acción:** El service verifica el `pinHash` contra el PIN enviado.
@@ -41,12 +45,12 @@ Los niños no usan email; usan el código de la casa y su PIN.
 
 Las rutas se protegen en capas para asegurar que solo los usuarios autorizados realicen acciones críticas.
 
-| Ruta | Middleware | Propósito |
-| :--- | :--- | :--- |
-| `/auth/register` | Ninguno | Público: Creación de cuenta nueva. |
-| `/auth/family/:code`| Ninguno | Público: Listar avatares de la familia. |
-| `/tasks/my-tasks` | `authMiddleware` | Privado: Cualquier miembro logueado. |
-| `/auth/member/reg` | `authMiddleware` + `isAdmin` | Restringido: Solo el Admin crea miembros. |
+| Ruta                 | Middleware                   | Propósito                                 |
+| :------------------- | :--------------------------- | :---------------------------------------- |
+| `/auth/register`     | Ninguno                      | Público: Creación de cuenta nueva.        |
+| `/auth/family/:code` | Ninguno                      | Público: Listar avatares de la familia.   |
+| `/tasks/my-tasks`    | `authMiddleware`             | Privado: Cualquier miembro logueado.      |
+| `/auth/member/reg`   | `authMiddleware` + `isAdmin` | Restringido: Solo el Admin crea miembros. |
 
 ---
 
@@ -76,3 +80,14 @@ src/
       ├── tasks/    # El motor de XP y Coins.
       └── story/    # La recompensa narrativa (Episodios).
 ```
+
+## 5. Historias de Usuario
+
+- Un admin crea una Tarea
+- Un admin elimina una Tarea
+- Un admin modifica una Tarea
+- Un admin asigna una Tarea
+- Un admin accede a todas las Tareas
+
+- Un member completa una Tarea
+- Un member accede a sus tareas

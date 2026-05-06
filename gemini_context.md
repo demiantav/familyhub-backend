@@ -20,6 +20,12 @@ Database Driver: @prisma/adapter-pg + pg (Required for Prisma 7).
     /auth   # Register, Login (Admin/Member)
   /shared   # Common Utilities (Prisma client)
 
+🌳 Git Strategy: Gitflow
+- main: Production-ready code.
+- develop: Integration branch for features.
+- feature/sprintX-name: Feature-specific branches.
+- Workflow: feature -> develop -> main.
+
 🎯 Business Logic & Constraints
 Core Loop: Tasks -> XP (Family) & Coins (Member) -> Story Progress (Shared) & Rewards (Personal).
 Mode: ONLY STORY MODE. No "Classic Mode".
@@ -35,6 +41,7 @@ Sprint 1: Auth & Families (✅ COMPLETED)
   - getFamilyMembers (Public endpoint by accessCode).
   - loginMember (PIN login for children/members).
 ✅ Security: authMiddleware & isAdminMiddleware implemented and verified.
+✅ Git: Feature branch merged into develop.
 
 Sprint 2: Tasks & Gamification Loop (IN PROGRESS)
 Goals:
@@ -43,7 +50,10 @@ Goals:
 - Implement Task Completion Logic (XP & Coins rewards).
 - Setup Story Episode Unlock Check.
 
+✅ Task Schema (Zod) defined in task.schema.ts.
+
 Next Steps:
-- Create Task Schema (Zod).
-- Implement createTask in Task Service (Admin restricted).
-- Implement getTasks for members.
+- Implement `taskService.createTask` (Include validation for `assignedToId` family integrity).
+- Implement `taskController.createTask` & `taskRoutes.ts`.
+- Implement `getTasks` service & controller (Member/Family filtering).
+- Implement Task Completion Logic (Update Status -> XP/Coins Reward -> Family XP).
